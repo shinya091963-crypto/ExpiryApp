@@ -1,0 +1,42 @@
+﻿@model ExpiryApp.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "ホーム";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-center">ダッシュボード</h2>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-12 col-md-4">
+            <div class="card border-danger shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-danger">期限切れ</h5>
+                    <p class="display-5 text-danger fw-bold">@Model.OverdueCount</p>
+                    <a class="btn btn-outline-danger" asp-controller="Expiry" asp-action="Index" asp-route-withinDays="365">一覧へ</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card border-warning shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-warning">7日以内</h5>
+                    <p class="display-5 text-warning fw-bold">@Model.Within7DaysCount</p>
+                    <a class="btn btn-outline-warning" asp-controller="Expiry" asp-action="Index" asp-route-withinDays="7">一覧へ</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card border-success shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-success">30日以内</h5>
+                    <p class="display-5 text-success fw-bold">@Model.Within30DaysCount</p>
+                    <a class="btn btn-outline-success" asp-controller="Expiry" asp-action="Index" asp-route-withinDays="30">一覧へ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a class="btn btn-primary btn-lg" asp-controller="Expiry" asp-action="Index">期限一覧ページへ</a>
+    </div>
+</div>

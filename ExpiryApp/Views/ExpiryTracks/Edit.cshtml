@@ -1,0 +1,68 @@
+@* フォームの中の先頭に追加 *@
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+@* DeviceId ブロックは前回のセレクト版のままでOK *@
+
+@* TrackType ブロックもセレクト版のままでOK *@
+
+@* 期限日は date 入力に（既定でそうなっていなければ差し替え） *@
+<div class="form-group">
+    <label asp-for="ExpiryDate" class="control-label"></label>
+    <input asp-for="ExpiryDate" class="form-control" type="date" />
+    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+</div>
+@model ExpiryApp.Models.ExpiryTrack
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ExpiryTrack</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ExpiryTrackId" />
+            <div class="form-group">
+                <label asp-for="DeviceId" class="control-label">Device</label>
+                <select asp-for="DeviceId" class="form-control" asp-items="ViewBag.DeviceId"></select>
+                <span asp-validation-for="DeviceId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TrackType" class="control-label"></label>
+                <input asp-for="TrackType" class="form-control" />
+                <span asp-validation-for="TrackType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpiryDate" class="control-label"></label>
+                <input asp-for="ExpiryDate" class="form-control" />
+                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LeadDays" class="control-label"></label>
+                <input asp-for="LeadDays" class="form-control" />
+                <span asp-validation-for="LeadDays" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Note" class="control-label"></label>
+                <input asp-for="Note" class="form-control" />
+                <span asp-validation-for="Note" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

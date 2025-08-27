@@ -1,0 +1,48 @@
+@model ExpiryApp.Models.ExpiryTrack
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>ExpiryTrack</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TrackType)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TrackType)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ExpiryDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ExpiryDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LeadDays)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LeadDays)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Note)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Note)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Device)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Device.DeviceId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ExpiryTrackId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,29 @@
+# ビルド成果物
+bin/
+obj/
+.vs/
+
+# ユーザー固有の設定
+*.user
+*.suo
+
+# ログや一時ファイル
+*.log
+
+# データベースファイル（ローカル専用）
+*.mdf
+*.ldf
+*.db
+*.sqlite
+
+# NuGet のパッケージ（復元できるので不要）
+packages/
+*.nupkg
+
+# 発行プロファイル
+*.pubxml
+*.pubxml.user
+
+# 機密情報・環境依存ファイル
+appsettings.Development.json
+secrets.json
