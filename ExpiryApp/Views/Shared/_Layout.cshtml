@@ -2,64 +2,223 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ExpiryApp</title>
+    <title>@(string.IsNullOrWhiteSpace(Convert.ToString(ViewData["Title"])) ? "ExpiryApp" : ViewData["Title"]) - ExpiryApp</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ExpiryApp.styles.css" asp-append-version="true" />
+    <link rel="icon" type="image/png" href="~/favicon.png" />
+
+    @RenderSection("Styles", required: false)
+
+    <style>
+        :root {
+            --ea-radius: .8rem;
+        }
+
+        .ea-rounded {
+            border-radius: var(--ea-radius);
+        }
+
+        .ea-shadow-sm {
+            box-shadow: 0 4px 16px rgba(0,0,0,.06);
+        }
+
+        .ea-header {
+            background: linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.0));
+        }
+
+        .ea-page-title {
+            margin: .5rem 0 0;
+        }
+
+        .ea-subtle {
+            opacity: .85;
+        }
+
+        .ea-footer {
+            font-size: .9rem;
+        }
+
+        #toTop {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            display: none;
+            z-index: 1050;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+<body class="d-flex flex-column min-vh-100">
+
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg bg-body border-bottom ea-shadow-sm">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ExpiryApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" 
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-calendar2-event" viewBox="0 0 16 16">
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2
+                        2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5z" />
+                        <path d="M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm2.5 3h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z" />
+                    </svg>
+                    <span class="fw-bold">ExpiryApp</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#appNav"
+                        aria-controls="appNav" aria-label="メニュー">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <!-- ここから追加部分 -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Devices" asp-action="Index">Devices</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="ExpiryTracks" asp-action="Index">ExpiryTracks</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Expiry" asp-action="Index">期限一覧</a>
-                        </li>
 
-                        <!-- 追加ここまで -->
-                    </ul>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="appNav" aria-labelledby="appNavLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="appNavLabel">メニュー</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="閉じる"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item"><a class="nav-link" href="@Url.Action("Index", "Home")">ダッシュボード</a></li>
+                            <li class="nav-item"><a class="nav-link" href="@Url.Action("Index", "Devices")">機器</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Expiry")">
+                                    期限一覧
+                                    @if (ViewBag.OverdueCount != null)
+                                    {
+                                        <span class="badge text-bg-danger ms-1">@ViewBag.OverdueCount</span>
+                                    }
+                                </a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="@Url.Action("Index", "ExpiryTracks")">ログ</a></li>
+                            <li class="nav-item"><a class="nav-link" href="@Url.Action("Privacy", "Home")">プライバシー</a></li>
+                        </ul>
+
+                        <!-- ★ 検索フォーム：必ず Devices/Index に GET で飛ぶ -->
+                        <form class="d-flex mb-2 mb-lg-0" role="search" method="get" action="@Url.Action("Index","Devices")">
+                            <input class="form-control me-2" type="search" name="q" placeholder="機器検索…"
+                                   value="@(Context.Request.Query["q"])" aria-label="検索">
+                            <button class="btn btn-outline-primary" type="submit">検索</button>
+                        </form>
+
+                        <div class="d-flex gap-2 ms-lg-3 mt-2 mt-lg-0">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    新規登録
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-controller="Devices" asp-action="Create">機器を追加</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Expiry" asp-action="Create">期限を追加</a></li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-outline-secondary" type="button" data-theme-toggle aria-label="テーマ切替">🌓</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
+
+        <div class="ea-header border-bottom">
+            <div class="container py-3">
+                <nav aria-label="breadcrumb">
+                    @if (IsSectionDefined("Breadcrumb"))
+                    {
+                        @RenderSection("Breadcrumb", required: false)
+                    }
+                    else
+                    {
+                        <ol class="breadcrumb mb-1">
+                            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">ホーム</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                        </ol>
+                    }
+                </nav>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h1 class="h4 ea-page-title mb-0">@ViewData["Title"]</h1>
+                    <div>@RenderSection("PageActions", required: false)</div>
+                </div>
+                @if (ViewData["Subtitle"] is string sub && !string.IsNullOrWhiteSpace(sub))
+                {
+                    <p class="text-body-secondary ea-subtle mt-2 mb-0">@sub</p>
+                }
+            </div>
+        </div>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+    <div class="container mt-3">
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-success ea-rounded" role="alert">
+                @TempData["StatusMessage"]
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger ea-rounded" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; @DateTime.Now.Year - ExpiryApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <main role="main" class="flex-grow-1">
+        <div class="container py-3">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="mt-auto border-top ea-footer">
+        <div class="container py-3 d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                &copy; @DateTime.Now.Year - ExpiryApp
+                &nbsp;·&nbsp;<a asp-area="" asp-controller="Home" asp-action="Privacy">プライバシー</a>
+            </div>
+            <div class="text-muted small">v@System.Reflection.Assembly.GetExecutingAssembly().GetName().Version</div>
         </div>
     </footer>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastArea"></div>
+    <button id="toTop" class="btn btn-primary ea-rounded" type="button" aria-label="先頭へ">▲</button>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // ナビのアクティブ表示
+        document.addEventListener('DOMContentLoaded', function () {
+            const path = location.pathname.toLowerCase();
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+                const href = (link.getAttribute('href') || '').toLowerCase();
+                if (!href) return;
+                if ((href === '/' && path === '/') || (href !== '/' && path.startsWith(href))) {
+                    link.classList.add('active');
+                    link.setAttribute('aria-current', 'page');
+                }
+            });
+            const toTop = document.getElementById('toTop');
+            window.addEventListener('scroll', () => { toTop.style.display = window.scrollY > 200 ? 'inline-flex' : 'none'; });
+            toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        });
+
+        // ダーク/ライト切替（localStorage）
+        (() => {
+            const key = 'ea-theme';
+            const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const saved = localStorage.getItem(key);
+            const theme = saved || (preferDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            window.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const cur = document.documentElement.getAttribute('data-bs-theme') || 'light';
+                        const next = cur === 'dark' ? 'light' : 'dark';
+                        document.documentElement.setAttribute('data-bs-theme', next);
+                        localStorage.setItem(key, next);
+                    });
+                });
+            });
+        })();
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

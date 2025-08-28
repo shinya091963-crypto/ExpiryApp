@@ -1,48 +1,51 @@
 @model ExpiryApp.Models.Device
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "機器を追加";
 }
 
-<h1>Create</h1>
+<h1 class="h4 mb-3">機器を追加</h1>
 
-<h4>Device</h4>
-<hr />
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-5">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="AssetTag" class="control-label"></label>
-                <input asp-for="AssetTag" class="form-control" />
+            <div class="mb-3">
+                <label asp-for="AssetTag" class="form-label"></label>
+                <input asp-for="AssetTag" class="form-control" placeholder="例: 23-000123（任意）" />
+                <div class="form-text">未入力可。ただし入力した場合は他と重複できません。</div>
                 <span asp-validation-for="AssetTag" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Location" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="Location" class="form-label"></label>
                 <input asp-for="Location" class="form-control" />
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="OwnerDept" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="OwnerDept" class="form-label"></label>
                 <input asp-for="OwnerDept" class="form-control" />
                 <span asp-validation-for="OwnerDept" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">登録</button>
+                <a asp-action="Index" class="btn btn-secondary">一覧に戻る</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

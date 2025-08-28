@@ -7,15 +7,21 @@
     var within = ViewBag.WithinDays is int w ? w : 30;
     var dept = ViewBag.Dept as string ?? "";
     var sort = ViewBag.Sort as string ?? "date_asc";
+
     int page = ViewBag.Page ?? 1;
     int pageSize = ViewBag.PageSize ?? 12;
     int total = ViewBag.Total ?? 0;
     int pages = (int)Math.Ceiling(total / (double)pageSize);
+
+    // ★ Razor の @page 誤認回避のために別名を用意
+    int p = page;
+    int ps = pageSize;
+    int prev = Math.Max(1, p - 1);
+    int next = Math.Min(pages, p + 1);
 }
 
 <h2 class="mb-4 text-center">期限が近い一覧（@within 日以内）</h2>
 
-<!-- フィルタフォーム -->
 <form method="get" class="row g-2 mb-4 justify-content-center">
     <div class="col-auto">
         <label class="col-form-label" for="withinDays">日数:</label>
@@ -30,21 +36,21 @@
 
     <div class="col-auto">
         <select class="form-select" name="sort">
-            <option value="date_asc"   selected="@(sort=="date_asc")">期限日 ↑</option>
-            <option value="date_desc"  selected="@(sort=="date_desc")">期限日 ↓</option>
-            <option value="type_asc"   selected="@(sort=="type_asc")">種類 ↑</option>
-            <option value="type_desc"  selected="@(sort=="type_desc")">種類 ↓</option>
-            <option value="device_asc" selected="@(sort=="device_asc")">機器名 ↑</option>
-            <option value="device_desc"selected="@(sort=="device_desc")">機器名 ↓</option>
+            <option value="date_asc" selected="@(sort == "date_asc")">期限日 ↑</option>
+            <option value="date_desc" selected="@(sort == "date_desc")">期限日 ↓</option>
+            <option value="type_asc" selected="@(sort == "type_asc")">種類 ↑</option>
+            <option value="type_desc" selected="@(sort == "type_desc")">種類 ↓</option>
+            <option value="device_asc" selected="@(sort == "device_asc")">機器名 ↑</option>
+            <option value="device_desc" selected="@(sort == "device_desc")">機器名 ↓</option>
         </select>
     </div>
 
     <div class="col-auto">
         <select class="form-select" name="pageSize">
-            <option value="6"  selected="@(pageSize==6)">6件</option>
-            <option value="12" selected="@(pageSize==12)">12件</option>
-            <option value="24" selected="@(pageSize==24)">24件</option>
-            <option value="48" selected="@(pageSize==48)">48件</option>
+            <option value="6" selected="@(ps == 6)">6件</option>
+            <option value="12" selected="@(ps == 12)">12件</option>
+            <option value="24" selected="@(ps == 24)">24件</option>
+            <option value="48" selected="@(ps == 48)">48件</option>
         </select>
     </div>
 
@@ -58,14 +64,13 @@
            asp-route-withinDays="@within"
            asp-route-dept="@dept"
            asp-route-sort="@sort"
-           asp-route-page="@page"
-           asp-route-pageSize="@(pageSize)">
+           asp-route-page="@p"
+           asp-route-pageSize="@ps">
             CSV ダウンロード
         </a>
     </div>
 </form>
 
-<!-- 一覧（テーブル形式） -->
 <table class="table table-sm table-hover align-middle">
     <thead>
         <tr>
@@ -78,62 +83,61 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var x in Model)
-{
-    var daysLeft = (x.ExpiryDate.Date - today).Days;
-    var rowClass = daysLeft < 0 ? "table-danger"
-               : (daysLeft <= 7 ? "table-warning" : "table-light");
+        @foreach (var x in Model)
+        {
+            var daysLeft = (x.ExpiryDate.Date - today).Days;
+            var rowClass = daysLeft < 0 ? "table-danger"
+            : (daysLeft <= 7 ? "table-warning" : "table-light");
 
-    <tr class="@rowClass">
-        <td>@x.ExpiryDate.ToString("yyyy/MM/dd")</td>
-        <td>@(daysLeft < 0 ? $"期限切れ ({daysLeft} 日)" : $"{daysLeft} 日")</td>
-        <td>@x.TrackType</td>
-        <td>
-            @x.Device?.Name @((x.Device?.AssetTag is string tag && !string.IsNullOrWhiteSpace(tag)) ? $"({tag})" : "")
-            <a class="ms-2" asp-controller="ExpiryTracks" asp-action="Edit" asp-route-id="@x.ExpiryTrackId">編集</a>
-        </td>
-        <td>@x.Device?.Location</td>
-        <td>@x.Note</td>
-    </tr>
-}
+            <tr class="@rowClass">
+                <td>@x.ExpiryDate.ToString("yyyy/MM/dd")</td>
+                <td>@(daysLeft < 0 ? $"期限切れ ({daysLeft} 日)" : $"{daysLeft} 日")</td>
+                <td>@x.TrackType</td>
+                <td>
+                    @x.Device?.Name @((x.Device?.AssetTag is string tag && !string.IsNullOrWhiteSpace(tag)) ? $"({tag})" : "")
+                    <a class="ms-2" asp-controller="ExpiryTracks" asp-action="Edit" asp-route-id="@x.ExpiryTrackId">編集</a>
+                </td>
+                <td>@x.Device?.Location</td>
+                <td>@x.Note</td>
+            </tr>
+        }
     </tbody>
 </table>
 
-<!-- ページャ -->
 @if (pages > 1)
 {
     <nav class="mt-4">
         <ul class="pagination justify-content-center">
-            <li class="page-item @(page<=1?"disabled":"")">
+            <li class="page-item @(p <= 1 ? "disabled" : "")">
                 <a class="page-link"
                    asp-route-withinDays="@within" asp-route-dept="@dept"
                    asp-route-sort="@sort"
-                   asp-route-page="@(page-1)" asp-route-pageSize="@(pageSize)">前へ</a>
+                   asp-route-page="@prev" asp-route-pageSize="@ps">前へ</a>
             </li>
 
             @for (int i = 1; i <= pages; i++)
             {
-                <li class="page-item @(i==page?"active":"")">
+                <li class="page-item @(i == p ? "active" : "")">
                     <a class="page-link"
                        asp-route-withinDays="@within" asp-route-dept="@dept"
                        asp-route-sort="@sort"
-                       asp-route-page="@i" asp-route-pageSize="@(pageSize)">@i</a>
+                       asp-route-page="@i" asp-route-pageSize="@ps">@i</a>
                 </li>
             }
 
-            <li class="page-item @(page>=pages?"disabled":"")">
+            <li class="page-item @(p >= pages ? "disabled" : "")">
                 <a class="page-link"
                    asp-route-withinDays="@within" asp-route-dept="@dept"
                    asp-route-sort="@sort"
-                   asp-route-page="@(page+1)" asp-route-pageSize="@(pageSize)">次へ</a>
+                   asp-route-page="@next" asp-route-pageSize="@ps">次へ</a>
             </li>
         </ul>
     </nav>
 }
 
 <p class="text-muted text-center mt-3">
-  色分け：
-  <span class="badge bg-danger">期限切れ</span> /
-  <span class="badge bg-warning text-dark">7日以内</span> /
-  <span class="badge bg-light text-dark">@within 日以内</span>
+    色分け：
+    <span class="badge bg-danger">期限切れ</span> /
+    <span class="badge bg-warning text-dark">7日以内</span> /
+    <span class="badge bg-light text-dark">@within 日以内</span>
 </p>
